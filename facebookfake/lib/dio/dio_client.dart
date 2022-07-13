@@ -30,11 +30,17 @@ class DioClient {
     //   return await fetchPostWithId(item['id']);
     // }).toList();
     List<Post> posts = [];
-    data.forEach((item) async {
+    // data.forEach((item) async {
+    //   Post post = await fetchPostWithId(item['id']);
+    //   posts.add(post);
+    //   print("posts: ${posts.length}");
+    // });
+    for(int i = 0; i < posts.length; i++) {
+      final item = data[i];
       Post post = await fetchPostWithId(item['id']);
       posts.add(post);
       print("posts: ${posts.length}");
-    });
+    }
 
     return posts;
   }
@@ -58,7 +64,7 @@ class DioClient {
       totalComment: totalComments,
       totalLike: totalLikes,
       ownerId: data['ownerId'],
-      username: user.username,
+      username: user.username ,
       avatar: user.avatar,
     );
   }
@@ -66,6 +72,9 @@ class DioClient {
   Future<User> fetchUserWithId(int id) async {
     final response = await _dio.get('$baseUrl/user/$id');
     final data = jsonDecode(response.data);
+    if(data == null) {
+      return User(id: 123,avatar: "aaa",username: "bbb");
+    }
     return User.fromJson(data);
   }
 
@@ -73,13 +82,13 @@ class DioClient {
     final response =
         await _dio.get('$baseUrl/like', queryParameters: {'postId': postId});
     final data = jsonDecode(response.data);
-    return data.length;
+    return data != null ? data.length : 0;
   }
 
   Future<int> getTotalCommentPost(int postId) async {
     final response =
         await _dio.get('$baseUrl/comment', queryParameters: {'postId': postId});
     final data = jsonDecode(response.data);
-    return data.length;
+    return data != null ? data.length : 0;
   }
 }
