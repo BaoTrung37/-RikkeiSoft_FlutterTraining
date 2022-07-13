@@ -1,10 +1,17 @@
+import 'package:app_chat/resources/app_colors.dart';
+import 'package:app_chat/util/app_router.dart';
+import 'package:app_chat/util/navigation_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
+import 'di/service_locator.dart';
 import 'firebase_options.dart';
+import 'util/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ServiceLocator().setUp();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -20,9 +27,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'App Chat With Firebase',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        backgroundColor: AppColors.backgroundColor,
+        primaryColor: Color(AppColors.primaryColor.colors.first.value),
       ),
-      home: const HomePage(),
+      navigatorKey: GetIt.I.get<NavigationSerivce>().navigatorKey,
+      initialRoute: Routes.initial,
+      onGenerateRoute: AppRouter.generateRoute,
     );
   }
 }
