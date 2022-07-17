@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   AppColors._private();
-  static const primaryColor = LinearGradient(colors: [
-    Color(0xFFFFA925),
-    Color(0xFFFF7841),
-  ]);
+
+  static const primaryColor = Color(0xFFFFA925);
 
   static const secondaryColor = Color(0xFF411582);
 
@@ -14,4 +12,14 @@ class AppColors {
   static const backgroundSecondaryColor = Color(0xFFFAFAFA);
 
   static const itemColor = Color(0xFFF5F5F5);
+
+  static const labelPrimary = Color(0xFFFFA925);
+
+  static const textPrimary = Color(0xFF262626);
+
+  static const textSecondary = Color(0xFFFAFAFA);
+
+  static const textTertiary = Color(0xFFFFA925);
+
+  static const iconSecondary = Color(0xFFC5C5C7);
 }

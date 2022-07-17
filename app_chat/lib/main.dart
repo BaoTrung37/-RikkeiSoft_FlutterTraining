@@ -28,20 +28,11 @@ class MyApp extends StatelessWidget {
       title: 'App Chat With Firebase',
       theme: ThemeData(
         backgroundColor: AppColors.backgroundColor,
-        primaryColor: Color(AppColors.primaryColor.colors.first.value),
+        primaryColor: AppColors.primaryColor,
       ),
       navigatorKey: GetIt.I.get<NavigationSerivce>().navigatorKey,
       initialRoute: Routes.initial,
       onGenerateRoute: AppRouter.generateRoute,
     );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold();
   }
 }
