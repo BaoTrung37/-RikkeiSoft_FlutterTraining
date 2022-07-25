@@ -1,3 +1,5 @@
+import 'package:app_chat/domain/pages/chat_room/chat_room_screen.dart';
+import 'package:app_chat/domain/pages/contact/contact_screen.dart';
 import 'package:app_chat/util/fade_route.dart';
 import 'package:app_chat/util/routes.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,14 @@ class AppRouter {
         return FadeRoute(
           page: const LoginScreen(),
         );
-
+      case Routes.contactScreen:
+        return FadeRoute(
+          page: const ContactScreen(),
+        );
+      case Routes.chatRoomScreen:
+        return FadeRoute(
+          page: const ChatRoomScreen(),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

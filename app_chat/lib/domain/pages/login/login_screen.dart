@@ -1,13 +1,55 @@
 import 'package:app_chat/resources/app_images.dart';
+import 'package:app_chat/provider/fireauth_provider.dart';
+import 'package:app_chat/util/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../resources/app_texts.dart';
+import '../../../util/navigation_service.dart';
 import '../../../widgets/text_form_base.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  void _onSubmit() async {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+      String email = emailController.text;
+      String password = passwordController.text;
+      print(email);
+      print(password);
+      FireauthProvider()
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then(
+        (value) {
+          if (value == true) {
+            GetIt.I.get<NavigationSerivce>().to(
+                  routeName: Routes.contactScreen,
+                  isBack: false,
+                );
+                
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Wrong Pass'),
+              ),
+            );
+          }
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,33 +84,21 @@ class LoginScreen extends StatelessWidget {
       child: Container(
         height: MediaQuery.of(context).size.height * 0.76,
         color: AppColors.backgroundColor,
-        child: Column(
-          children: [
-            const SizedBox(height: 55),
-            _buildTitle(),
-            const SizedBox(height: 69),
-            Form(
-              child: Padding(
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              const SizedBox(height: 55),
+              _buildTitle(),
+              const SizedBox(height: 69),
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 33),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const TextFormBase(
-                      hintText: AppTexts.email,
-                      prefixIcon: Icon(
-                        Icons.mail,
-                        color: AppColors.iconSecondary,
-                      ),
-                    ),
+                    _buildEmailInput(),
                     const SizedBox(height: 24),
-                    const TextFormBase(
-                      hintText: AppTexts.password,
-                      prefixIcon: Icon(
-                        Icons.lock,
-                        color: AppColors.iconSecondary,
-                      ),
-                      isPassword: true,
-                    ),
+                    _buildPasswordInput(),
                     const SizedBox(height: 8),
                     _buildForgotPasswordText(),
                     const SizedBox(height: 80),
@@ -78,16 +108,43 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordInput() {
+    return TextFormBase(
+      controller: passwordController,
+      hintText: AppTexts.password,
+      prefixIcon: const Icon(
+        Icons.lock,
+        color: AppColors.iconSecondary,
+      ),
+      isPassword: true,
+    );
+  }
+
+  Widget _buildEmailInput() {
+    return TextFormBase(
+      controller: emailController,
+      hintText: AppTexts.email,
+      prefixIcon: const Icon(
+        Icons.mail,
+        color: AppColors.iconSecondary,
       ),
     );
   }
 
   Widget _buildSignInWithGoogle() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        print('hihi');
+        // await FireauthProvider().signInWithGoogle();
+        GetIt.I.get<NavigationSerivce>().to(routeName: Routes.chatRoomScreen);
+      },
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.primaryColor,
@@ -118,7 +175,7 @@ class LoginScreen extends StatelessWidget {
 
   Widget _buildSignIn() {
     return GestureDetector(
-      onTap: () {},
+      onTap: _onSubmit,
       child: Container(
         height: 58,
         width: double.infinity,

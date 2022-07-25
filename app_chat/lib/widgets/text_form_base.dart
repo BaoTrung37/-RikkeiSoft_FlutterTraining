@@ -9,6 +9,7 @@ class TextFormBase extends StatefulWidget {
   final Icon? prefixIcon;
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
+  final FormFieldSetter<String>? onSaved;
   final int maxLines;
 
   final bool isPassword;
@@ -20,6 +21,7 @@ class TextFormBase extends StatefulWidget {
     this.prefixIcon,
     this.controller,
     this.onChanged,
+    this.onSaved,
     this.maxLines = 1,
     this.isPassword = false,
   }) : super(key: key);
@@ -45,15 +47,16 @@ class _TextFormBaseState extends State<TextFormBase> {
       style: AppTextStyles.textSmallLight.copyWith(
         color: AppColors.textPrimary,
       ),
+
       initialValue: widget.intialValue,
       onChanged: widget.onChanged,
       maxLines: widget.maxLines,
       obscureText: passwordVisible,
-      // keyboardType: widget.isPassword
-      //     ? TextInputType.visiblePassword
-      //     : TextInputType.text,
       validator: (value) {
         return null;
+      },
+      onSaved: (value) {
+        widget.controller?.text = value!;
       },
       decoration: InputDecoration(
         prefixIcon: widget.prefixIcon,
