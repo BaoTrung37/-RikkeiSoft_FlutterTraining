@@ -80,7 +80,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
           onTap: () {
             GetIt.I.get<NavigationSerivce>().to(
                   routeName: Routes.chatRoomScreen,
-                  arguments: user,
+                  arguments: user.id,
                 );
           },
         );
@@ -111,8 +111,21 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
       title: const Text(
         AppTexts.contactAppBarTitle,
       ),
-      actions: const [
-        CircleAvatar(
+      actions: [
+        IconButton(
+          onPressed: () {
+            ref.watch(fireAuthProvider).signOut();
+            GetIt.I.get<NavigationSerivce>().to(
+                  routeName: Routes.initial,
+                  isBack: false,
+                );
+          },
+          icon: const Icon(
+            Icons.logout,
+            color: AppColors.iconSecondary,
+          ),
+        ),
+        const CircleAvatar(
           minRadius: 18,
           backgroundImage: NetworkImage(
             'https://i.pravatar.cc/300',

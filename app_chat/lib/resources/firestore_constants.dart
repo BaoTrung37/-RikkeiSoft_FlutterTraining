@@ -5,4 +5,8 @@ class FirestoreConstants {
   static const avatar = 'avatar';
   static const aboutMe = 'aboutMe';
   static const id = 'id';
+  static const lastMessage = 'lastMessage';
+  static const timestamp = 'timestamp';
+  static const idFrom = 'idFrom';
+  static const idTo = 'idTo';
 }

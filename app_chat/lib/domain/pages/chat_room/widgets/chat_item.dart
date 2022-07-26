@@ -8,9 +8,10 @@ class ChatItem extends StatelessWidget {
   const ChatItem({
     Key? key,
     required this.chatInfo,
+    required this.isMe,
   }) : super(key: key);
   final ChatInfo chatInfo;
-  final isMe = true;
+  final bool isMe;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,7 +40,7 @@ class ChatItem extends StatelessWidget {
                 vertical: 12,
               ),
               child: Text(
-                chatInfo.lassMessage,
+                chatInfo.lastMessage,
                 style: AppTextStyles.textXSmallLight.copyWith(
                   color: isMe ? AppColors.textSecondary : AppColors.textPrimary,
                 ),

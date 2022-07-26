@@ -18,8 +18,11 @@ class AppRouter {
           page: const ContactScreen(),
         );
       case Routes.chatRoomScreen:
+        final toId = settings.arguments as String;
         return FadeRoute(
-          page: const ChatRoomScreen(),
+          page: ChatRoomScreen(
+            toId: toId,
+          ),
         );
       default:
         return MaterialPageRoute(

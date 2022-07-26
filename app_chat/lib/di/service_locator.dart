@@ -7,14 +7,8 @@ import 'package:get_it/get_it.dart';
 class ServiceLocator {
   Future<void> setUp() async {
     GetIt.I.registerSingleton<NavigationSerivce>(NavigationSerivce());
-  }
-
-  Future<void> getFireStore() async {
     GetIt.I.registerLazySingleton<FireStoreProvider>(
         () => FireStoreProvider(fireStore: FirebaseFirestore.instance));
-  }
-
-  Future<void> getFireAuth() async {
     GetIt.I.registerSingleton<FireauthProvider>(FireauthProvider());
   }
 }

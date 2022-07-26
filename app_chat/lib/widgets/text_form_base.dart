@@ -43,11 +43,12 @@ class _TextFormBaseState extends State<TextFormBase> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      textAlign: TextAlign.start,
+      textAlignVertical: TextAlignVertical.center,
       controller: widget.controller,
       style: AppTextStyles.textSmallLight.copyWith(
         color: AppColors.textPrimary,
       ),
-
       initialValue: widget.intialValue,
       onChanged: widget.onChanged,
       maxLines: widget.maxLines,
@@ -58,7 +59,14 @@ class _TextFormBaseState extends State<TextFormBase> {
       onSaved: (value) {
         widget.controller?.text = value!;
       },
+      // strutStyle: const StrutStyle(
+      //   forceStrutHeight: true,
+      //   fontSize: 18,
+      //   height: 1.5,
+      // ),
       decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(10),
+        isDense: true,
         prefixIcon: widget.prefixIcon,
         suffixIcon: widget.isPassword
             ? IconButton(

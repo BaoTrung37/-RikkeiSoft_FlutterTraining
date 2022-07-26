@@ -13,8 +13,6 @@ import 'util/routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ServiceLocator().setUp();
-  await ServiceLocator().getFireStore();
-  await ServiceLocator().getFireAuth();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

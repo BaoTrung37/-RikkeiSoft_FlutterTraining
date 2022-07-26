@@ -23,5 +23,9 @@ class AppColors {
 
   static const textTertiary = Color(0xFFFFA925);
 
+  static const iconPrimary = Color(0xFFFFA925);
+
   static const iconSecondary = Color(0xFFC5C5C7);
+
+  static const colorGrey = Color(0xFFD4D4D4);
 }
