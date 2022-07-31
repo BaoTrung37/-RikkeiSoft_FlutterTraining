@@ -1,5 +1,6 @@
 import 'package:app_chat/domain/pages/chat_room/chat_room_screen.dart';
 import 'package:app_chat/domain/pages/contact/contact_screen.dart';
+import 'package:app_chat/models/user.dart';
 import 'package:app_chat/util/fade_route.dart';
 import 'package:app_chat/util/routes.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +19,10 @@ class AppRouter {
           page: const ContactScreen(),
         );
       case Routes.chatRoomScreen:
-        final toId = settings.arguments as String;
+        final userRev = settings.arguments as User;
         return FadeRoute(
           page: ChatRoomScreen(
-            toId: toId,
+            userRev: userRev,
           ),
         );
       default:

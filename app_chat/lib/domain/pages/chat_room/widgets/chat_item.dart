@@ -1,3 +1,4 @@
+import 'package:app_chat/domain/pages/chat_room/widgets/image_item.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app_chat/models/chat_info.dart';
@@ -34,18 +35,25 @@ class ChatItem extends StatelessWidget {
                     : const Radius.circular(0),
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 17,
-                vertical: 12,
-              ),
-              child: Text(
-                chatInfo.lastMessage,
-                style: AppTextStyles.textXSmallLight.copyWith(
-                  color: isMe ? AppColors.textSecondary : AppColors.textPrimary,
-                ),
-              ),
-            ),
+            child: chatInfo.type == ChatType.text.value
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 17,
+                      vertical: 12,
+                    ),
+                    child: Text(
+                      chatInfo.lastMessage,
+                      style: AppTextStyles.textXSmallLight.copyWith(
+                        color: isMe
+                            ? AppColors.textSecondary
+                            : AppColors.textPrimary,
+                      ),
+                    ),
+                  )
+                : ImageItem(
+                    imageUrl: chatInfo.lastMessage,
+                    onTap: () {},
+                  ),
           ),
         ],
       ),

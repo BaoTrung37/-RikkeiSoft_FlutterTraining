@@ -9,4 +9,5 @@ class FirestoreConstants {
   static const timestamp = 'timestamp';
   static const idFrom = 'idFrom';
   static const idTo = 'idTo';
-}
+  static const type = 'type';
+ }

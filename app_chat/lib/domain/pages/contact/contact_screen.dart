@@ -1,6 +1,6 @@
 import 'package:app_chat/domain/pages/contact/widgets/bubble_chat.dart';
-import 'package:app_chat/provider/fireauth_provider.dart';
-import 'package:app_chat/provider/firestore_provider.dart';
+import 'package:app_chat/provider/auth_provider.dart';
+import 'package:app_chat/provider/home_provider.dart';
 import 'package:app_chat/resources/app_colors.dart';
 import 'package:app_chat/resources/app_text_styles.dart';
 import 'package:app_chat/resources/app_texts.dart';
@@ -13,13 +13,6 @@ import 'package:get_it/get_it.dart';
 import '../../../models/user.dart';
 import '../../../util/navigation_service.dart';
 
-final fireStoreProvider = Provider<FireStoreProvider>(
-  (ref) => GetIt.I.get<FireStoreProvider>(),
-);
-final fireAuthProvider = Provider<FireauthProvider>(
-  (ref) => FireauthProvider(),
-);
-
 class ContactScreen extends ConsumerStatefulWidget {
   const ContactScreen({Key? key}) : super(key: key);
 
@@ -28,30 +21,30 @@ class ContactScreen extends ConsumerStatefulWidget {
 }
 
 class _ContactScreenState extends ConsumerState<ContactScreen> {
+  final homeProvider = GetIt.I.get<HomeProvider>();
+  final authProvider = GetIt.I.get<AuthProvider>();
   late String currentUserId;
+
   @override
   void initState() {
     // TODO: implement initState
-    currentUserId = ref.read(fireAuthProvider).user.uid;
-    // print(ref.read(fireAuthProvider).user.displayName);
+    currentUserId = authProvider.user.uid;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final users = ref.watch(fireStoreProvider).getUserList();
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: _buildAppBar(),
       body: StreamBuilder<QuerySnapshot>(
-        stream: ref.watch(fireStoreProvider).getUserList(),
+        stream: homeProvider.getUserList(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if ((snapshot.data?.docs.length ?? 0) > 0) {
-              return ListView.separated(
+              return ListView.builder(
                   itemBuilder: (context, index) =>
                       _buildUserList(context, snapshot.data?.docs[index]),
-                  separatorBuilder: (context, index) => const Divider(),
                   itemCount: snapshot.data!.docs.length);
             } else {
               return const Center(
@@ -75,14 +68,19 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
       if (user.id == currentUserId) {
         return Container();
       } else {
-        return BubbleChat(
-          user: user,
-          onTap: () {
-            GetIt.I.get<NavigationSerivce>().to(
-                  routeName: Routes.chatRoomScreen,
-                  arguments: user.id,
-                );
-          },
+        return Column(
+          children: [
+            BubbleChat(
+              user: user,
+              onTap: () {
+                GetIt.I.get<NavigationSerivce>().to(
+                      routeName: Routes.chatRoomScreen,
+                      arguments: user,
+                    );
+              },
+            ),
+            const Divider(),
+          ],
         );
       }
     } else {
@@ -114,7 +112,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
       actions: [
         IconButton(
           onPressed: () {
-            ref.watch(fireAuthProvider).signOut();
+            authProvider.signOut();
             GetIt.I.get<NavigationSerivce>().to(
                   routeName: Routes.initial,
                   isBack: false,
@@ -125,10 +123,10 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
             color: AppColors.iconSecondary,
           ),
         ),
-        const CircleAvatar(
+        CircleAvatar(
           minRadius: 18,
           backgroundImage: NetworkImage(
-            'https://i.pravatar.cc/300',
+            authProvider.user.photoURL!,
           ),
         )
       ],

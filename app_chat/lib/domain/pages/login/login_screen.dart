@@ -1,5 +1,5 @@
 import 'package:app_chat/resources/app_images.dart';
-import 'package:app_chat/provider/fireauth_provider.dart';
+import 'package:app_chat/provider/auth_provider.dart';
 import 'package:app_chat/util/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,17 +11,22 @@ import '../../../resources/app_texts.dart';
 import '../../../util/navigation_service.dart';
 import '../../../widgets/text_form_base.dart';
 
-class LoginScreen extends StatefulWidget {
+final authProvider = Provider.autoDispose<AuthProvider>(
+  (ref) => GetIt.I.get<AuthProvider>(),
+);
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   void _onSubmit() async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
@@ -29,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
       String password = passwordController.text;
       print(email);
       print(password);
-      FireauthProvider()
+      AuthProvider()
           .signInWithEmailAndPassword(email: email, password: password)
           .then(
         (value) {
@@ -38,7 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   routeName: Routes.contactScreen,
                   isBack: false,
                 );
-                
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -142,8 +146,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return GestureDetector(
       onTap: () async {
         print('hihi');
-        // await FireauthProvider().signInWithGoogle();
-        GetIt.I.get<NavigationSerivce>().to(routeName: Routes.chatRoomScreen);
+        bool isSuccess = await ref.read(authProvider).signInWithGoogle();
+        if (isSuccess) {
+          GetIt.I.get<NavigationSerivce>().to(
+                routeName: Routes.contactScreen,
+                isBack: false,
+              );
+        }
       },
       child: Container(
         decoration: BoxDecoration(

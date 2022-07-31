@@ -22,39 +22,20 @@ class BubbleChat extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: 15),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 19),
-              child: CircleAvatar(
-                minRadius: 21,
-                backgroundImage: NetworkImage(
-                  'https://i.pravatar.cc/300',
-                ),
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 19),
+              child: _buildAvatar(),
             ),
             const SizedBox(width: 12),
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 23),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      user.username,
-                      style: AppTextStyles.textSmall.copyWith(
-                        color: AppColors.textPrimary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+                    _buildUsernameView(),
                     const SizedBox(height: 4),
-                    Text(
-                      'Lorem qua. Lorem qua.Lorem qua. Lorem qua.Lorem qua. Lorem qua. Lorem qua. Lorem qua.Lorem qua.Lorem qua.Lorem qua.vLorem qua.',
-                      style: AppTextStyles.textXXSmallLight.copyWith(
-                        color: AppColors.textTertiary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+                    _buildMessageRev(),
                   ],
                 ),
               ),
@@ -67,29 +48,66 @@ class BubbleChat extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Text(
-                    '2 min ago',
-                    style: AppTextStyles.textXSmallLight.copyWith(
-                      color: AppColors.textGrey,
-                    ),
-                  ),
+                  _buildTimestampLastMessage(),
                   const SizedBox(height: 4),
-                  CircleAvatar(
-                    minRadius: 8,
-                    backgroundColor: AppColors.primaryColor,
-                    child: Text(
-                      '1',
-                      style: AppTextStyles.textXXSmal.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
+                  _buildUnreadMessagesCount(),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildUnreadMessagesCount() {
+    return CircleAvatar(
+      minRadius: 8,
+      backgroundColor: AppColors.primaryColor,
+      child: Text(
+        '1',
+        style: AppTextStyles.textXXSmal.copyWith(
+          color: AppColors.textSecondary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimestampLastMessage() {
+    return Text(
+      '2 phút trước',
+      style: AppTextStyles.textXSmallLight.copyWith(
+        color: AppColors.textGrey,
+      ),
+    );
+  }
+
+  Widget _buildMessageRev() {
+    return Text(
+      'Bạn có tin nhắn mới',
+      style: AppTextStyles.textXXSmallLight.copyWith(
+        color: AppColors.textTertiary,
+      ),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+    );
+  }
+
+  Widget _buildUsernameView() {
+    return Text(
+      user.username,
+      style: AppTextStyles.textSmall.copyWith(
+        color: AppColors.textPrimary,
+      ),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+    );
+  }
+
+  Widget _buildAvatar() {
+    return CircleAvatar(
+      minRadius: 21,
+      backgroundImage: NetworkImage(user.avatar),
     );
   }
 }

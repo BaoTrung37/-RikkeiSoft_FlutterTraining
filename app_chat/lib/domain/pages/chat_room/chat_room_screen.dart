@@ -1,31 +1,28 @@
+import 'dart:io';
+
 import 'package:app_chat/domain/pages/chat_room/widgets/chat_item.dart';
 import 'package:app_chat/models/chat_info.dart';
+import 'package:app_chat/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:app_chat/provider/fireauth_provider.dart';
-import 'package:app_chat/provider/firestore_provider.dart';
+import 'package:app_chat/provider/auth_provider.dart';
+import 'package:app_chat/provider/chat_provider.dart';
 import 'package:app_chat/resources/app_texts.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../util/navigation_service.dart';
 import 'widgets/form_send.dart';
 
-final storeProvider = Provider<FireStoreProvider>(
-  (ref) => GetIt.I.get<FireStoreProvider>(),
-);
-
-final authProvider = Provider<FireauthProvider>(
-  (ref) => GetIt.I.get<FireauthProvider>(),
-);
-
 class ChatRoomScreen extends ConsumerStatefulWidget {
-  final String toId;
+  final User userRev;
   const ChatRoomScreen({
-    required this.toId,
+    required this.userRev,
     Key? key,
   }) : super(key: key);
 
@@ -37,32 +34,57 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   String message = '';
   String groupId = '';
   String currentId = '';
+  String imageUrl = '';
+  File? imageFile;
+
   var _limit = 20;
   final int _limitIncrement = 20;
 
+  final chatProvider = GetIt.I.get<ChatProvider>();
+  final authProvider = GetIt.I.get<AuthProvider>();
+
   final ScrollController scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
+
   @override
   void initState() {
-    // TODO: implement initState
-    currentId = ref.read(authProvider).user.uid;
+    currentId = authProvider.user.uid;
     scrollController.addListener(_scrollListener);
-    if (currentId.compareTo(widget.toId) > 0) {
-      groupId = '$currentId-${widget.toId}';
+    if (currentId.compareTo(widget.userRev.id) > 0) {
+      groupId = '$currentId-${widget.userRev.id}';
     } else {
-      groupId = '${widget.toId}-$currentId';
+      groupId = '${widget.userRev.id}-$currentId';
     }
     super.initState();
   }
 
-  void onSend() {
-    print('send');
+  Future getImage() async {
+    ImagePicker imagePicker = ImagePicker();
+    XFile? pickedFile;
+    pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      imageFile = File(pickedFile.path);
+      uploadImageFile();
+    }
+  }
+
+  Future uploadImageFile() async {
+    String filename = DateTime.now().millisecondsSinceEpoch.toString();
+    UploadTask uploadTask = chatProvider.upLoadImageFile(imageFile!, filename);
+    try {
+      TaskSnapshot snapshot = await uploadTask;
+      imageUrl = await snapshot.ref.getDownloadURL();
+      onSend(imageUrl, ChatType.image.value);
+    } on FirebaseException catch (e) {
+      print(e.message);
+    }
+  }
+
+  void onSend(String message, int type) {
     if (message.isNotEmpty) {
-      ref
-          .watch(storeProvider)
-          .sendMessage(message, groupId, currentId, widget.toId);
-      // setText('');
-      _textController.clear();
+      chatProvider.sendMessage(
+          message, type, groupId, currentId, widget.userRev.id);
+      _textController.text = '';
     }
   }
 
@@ -83,7 +105,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
       body: Column(
         children: [
           StreamBuilder<QuerySnapshot>(
-            stream: ref.watch(storeProvider).getChatMessage(groupId, _limit),
+            stream: chatProvider.getChatMessage(groupId, _limit),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if ((snapshot.data?.docs.length ?? 0) > 0) {
@@ -112,13 +134,11 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           ),
           FormSend(
             controller: _textController,
-            onTap: onSend,
+            onTabSend: () => onSend(_textController.text, ChatType.text.value),
             onChanged: (value) {
-              setState(() {
-                _textController.text = value!;
-                message = _textController.text;
-              });
+              message = _textController.text;
             },
+            onTabImage: getImage,
           ),
         ],
       ),
@@ -126,7 +146,6 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   }
 
   AppBar _buildAppBarTitle() {
-    final FireauthProvider auth = FireauthProvider();
     return AppBar(
       elevation: 1,
       backgroundColor: AppColors.backgroundColor,
@@ -142,10 +161,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
       ),
       title: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             minRadius: 18,
             backgroundImage: NetworkImage(
-              'https://i.pravatar.cc/300',
+              widget.userRev.avatar,
             ),
           ),
           const SizedBox(width: 12),
@@ -156,7 +175,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    auth.user.displayName ?? 'User12345',
+                    widget.userRev.username,
                     style: AppTextStyles.textSmall.copyWith(
                       color: AppColors.textPrimary,
                     ),
